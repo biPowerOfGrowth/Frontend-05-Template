@@ -9,7 +9,7 @@ http.createServer((request, response) => {
   }).on('end', () => {
     response.writeHead(200, {'Content-Type': 'text/html'});
     response.end(`<html>
-    <head>
+    <head id="headid">
       <style>
       body div #mydiv{width: 100px;height:100px;border:1px solid red;}
       </style>

@@ -1,5 +1,6 @@
-const parser = require('./parser.js');
 const net = require('net');
+const parser = require('./parser.js');
+
 
 class TrunkedBodyParser {
   constructor() {
