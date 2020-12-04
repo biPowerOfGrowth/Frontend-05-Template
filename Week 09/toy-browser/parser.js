@@ -11,11 +11,83 @@ let rules = [];
 // 把css规则暂存数组
 function addCssRules(text){
     var ast = css.parse(text);
-    console.log(JSON.stringify(ast, null, "   ")); // 
+    // console.log(JSON.stringify(ast, null, "   ")); // 
     rules.push(...ast.stylesheet.rules);
 }
+
+function match(element, selector){
+    if(!selector || !element.attributes){
+        return false;
+    }
+
+    if(selector.charAt(0) == '#'){
+        let attr = element.attributes.filter(attr => attr.name === "id")[0]
+        if(attr && attr.value === selector.replace("#", '')){
+            return true;
+        }
+    }
+    else if(selector.charAt(0) == '.'){
+        let attr = element.attributes.filter(attr => attr.name === 'class')[0]
+        if(attr && attr.value === selector.replace(".", '')){
+            return true;
+        }
+    }
+    else {
+        if(element.tagName === selector){
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+function computedCSS(element){
+    // console.log(rules);
+    //  避免栈变化引起的污染
+    var elements = stack.slice().reverse();
+    if(!element.computedStyle){
+        element.computedStyle = {};
+    }
+
+    for(let rule of rules){
+        var selectorParts = rule.selectors[0].split(" ").reverse();
+        // selectorParts = ['#mydiv', 'div', 'body']
+        if(!match(element, selectorParts[0])){
+            continue;
+        }
+        let matched = false;
+
+        var j = 1;
+        for(var i = 0; i < elements.length; i++){
+            if(match(elements[i], selectorParts[j])){
+                j++;
+            }
+        }
+
+        if(j >= selectorParts.length ){
+            matched = true;
+        }
+
+        if(matched){
+            //  如果匹配到，我们要加入
+            console.log('Element', element, 'matched rule', rule);
+            let computedStyle = element.computedStyle;
+            for(let declaration of rule.declarations){
+                if(!computedStyle[declaration.property]){
+                    computedStyle[declaration.property] = {};
+                    computedStyle[declaration.property].value = declaration.value;
+                }
+            }
+
+            console.log('element.computedStyle', element.computedStyle);
+        }
+
+    }
+}
+
 function emit(token){
-    console.log(token);
+    // console.log(token);
     // if(token.type === 'text'){
     //     return;
     // }
@@ -37,6 +109,8 @@ function emit(token){
                 });                
             }
         }
+
+        computedCSS(element);
 
         top.children.push(element);
         element.parent = top;
@@ -641,5 +715,5 @@ module.exports.parserHTML = function parserHTML(html){
         state = state(c);
     }
     state = state(EOF);
-    console.log(stack[0]);
+    // console.log(stack[0]);
 }

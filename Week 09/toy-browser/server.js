@@ -11,12 +11,16 @@ http.createServer((request, response) => {
     response.end(`<html>
     <head id="headid">
       <style>
-      body div #mydiv{width: 100px;height:100px;border:1px solid red;}
+      body .wrapper{background-color: gray}
+      body div #box{width: 100px;height:100px;border:1px solid red;}
       </style>
     </head>
     <body>
-      <div id='box'>
+      <div class='wrapper'>
+         <div id='box'>
+         </div>
       </div>
+    
       <img/>
     </body>
     </html>`);
