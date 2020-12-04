@@ -5,6 +5,15 @@ let currentToken = null;
 let currentAttribute = null;
 let currentTextNode = null;
 let stack = [{type: 'document', children: []}];
+const css = require('css');
+let rules = [];
+
+// 把css规则暂存数组
+function addCssRules(text){
+    var ast = css.parse(text);
+    console.log(JSON.stringify(ast, null, "   "));
+    rules.push(...ast.stylesheet.rules);
+}
 function emit(token){
     console.log(token);
     // if(token.type === 'text'){
@@ -45,6 +54,10 @@ function emit(token){
             throw new Error("Tag start end does't match");
         }
         else{
+            // 遇到style标签，执行添加css规则的操作
+            if(top.tagName === 'style'){
+                addCssRules(top.children[0].content);
+            }
             stack.pop();
         }
         currentTextNode = null;
