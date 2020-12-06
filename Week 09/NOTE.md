@@ -94,6 +94,10 @@ emit函数接受了所有的token。在此完成dom树的构建》
 npm i css
 使用css解析器收集css规则，构建css ast
 
+# 6、选择器与元素匹配
+
+# 7、 specificity的计算逻辑
+
 
 
 
