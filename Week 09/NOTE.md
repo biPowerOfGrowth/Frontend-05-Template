@@ -51,12 +51,56 @@ function data(c){ // 起始状态接受字符
 
 状态机每部实现都可以在标准文档中找到实际描述。
 
-# 3、创建元素，创建token序列，处理属性，创建dom树
+# 3、创建元素，创建token序列，完成词法分析
 
-创建数组，保存token。
-在状态机节点，保存需要的token
+创建数组，保存token。状态机节点，保存需要的token，完成html词法分析。
 
-# 4、css计算
+# 4、用栈构建dom树的原理
+
+emit函数接受了所有的token。在此完成dom树的构建》
+
+创建根节点 ```let stack = [{type: 'document', children: []}];```
+
+取出栈顶元素 ```let top = stack[stack.length - 1]```
+
+如果遇到startTag token，创建element，入栈
+```if(token.type === 'startTag'){
+        let element = {
+            type: 'element',
+            children: [],
+            attributes: []
+        };
+
+
+         element.tagName = token.tagName;
+
+        for(let p in token){
+            if(p !== 'type' && p !== 'tagName'){
+                element.attributes.push({
+                    name: p,
+                    value: token[p]
+                });                
+            }
+        }
+
+        top.children.push(element);
+        element.parent = top;
+    }```
+实现参考 tree construction
+实现重点：用栈实现构建dom树
+
+# 5、css规则收集
+
+npm i css
+使用css解析器收集css规则，构建css ast
+
+
+
+
+
+
+
+
 
 
 
