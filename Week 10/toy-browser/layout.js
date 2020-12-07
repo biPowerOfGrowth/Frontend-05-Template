@@ -19,7 +19,7 @@ function getStyle(element){
     return element.style;
 }
 
-module.exports.layout = function layout(element){
+module.exports = function layout(element){
     if(!element.computedStyle) return;
     let elementStyle = getStyle(element);
 
@@ -123,8 +123,8 @@ module.exports.layout = function layout(element){
         
         for(var i = 0; i < items.length; i++){
             let item = items[i];
-            if(style[mainSize] !== null || style[mainSize]){
-                style[mainSize]
+            if(style[mainSize] !== null || style[mainSize] !== (void 0)){
+                style[mainSize] =  elementStyle[mainSize] + itemStyle[mainSize];;
             }
         }
         isAutoMainSize = true;
@@ -132,4 +132,51 @@ module.exports.layout = function layout(element){
 
     let flexLine = [];
     let flexLines = [flexLine];
+
+    let mainSpace = elementStyle[mainSize];
+    let corssSpace = 0;
+
+    for(let i = 0; i< items.length; i++){
+        let item  = items[i];
+        let itemStyle = getStyle(item);
+
+        if(itemStyle[mainSize] === null){
+            itemStyle[mainSize] = 0;
+        }
+
+        if(itemStyle.flex){
+            flexLine.push(item);
+        }
+        else if(style.flexWrap === 'nowrap' && isAutoMainSize){
+            mainSpace -= itemStyle[mainSize];
+            if(itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)){
+                crossSpace = Math.max(crossSpace, itemStyle[crossSize]);
+            }
+
+            flexLine.push(item);
+        }
+        else{
+            if(itemStyle[mainSize] > style[mainSize]){
+                itemStyle[mainSize] = style[mainSize];
+            }
+            if(mainSize > itemStyle[mainSize]){
+                flexLine.mainSize = mainSpace;
+                flexLine.crossSpace = crossSpace;
+                flexLine = [item];
+                flexLines.push(flexLine);
+                mainSpace = style[mainSize];
+                corssSpace = 0;
+            }
+            else{
+                flexLine.push(item);
+            }
+
+            if(itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)){
+                crossSpace = Math.max(crossSpace, itemStyle[crossSize]);
+            }
+            mainSpace -= itemStyle[mainSize];
+        }
+    }
+    flexLine.mainSpace = mainSpace;
+    console.log(item);
 }
